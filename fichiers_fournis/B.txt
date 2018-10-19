@@ -1,0 +1,12 @@
+B.txt
+Makefile
+readcmd.c
+readcmd.h
+readcmd.o
+shell
+shell.c
+shell.o
+tst
+tst.c
+tst.o
+/mnt/c/Users/Ancelin/Documents/Cours/S7/Programmation Concurrente/TP/TP1/fichiers_fournis
