@@ -14,7 +14,7 @@
 int main()
 {
 	struct cmdline *command;
-	int i, j, pid, child, dead, status, out;
+	int i, j, pid, child, dead, status;
 
 	/* Looping while user doesn't want to exit */
 	while (1) {
@@ -28,25 +28,46 @@ int main()
 			exit(-1);
 		} else if (pid == 0) {
 			/* Child code */
-			if (command->out){
+			
+			/* Handling */
+			if (command->out) {
 				/* Open the output file */
-				out = open(command->out, O_RDWR|O_CREAT|O_APPEND, 0600);
+				int out = open(command->out, O_RDWR|O_CREAT|O_APPEND);
 				if (-1 == out) { 
-					perror("opening the file failed"); 
+					perror("opening the output file failed"); 
 					exit(-1); 
 				}
 
 				/* Redirect stdout to a file */
 				if (-1 == dup2(out, STDOUT_FILENO)) { 
-					perror("cannot redirect stdout"); 
+					perror("cannot redirect to stdout"); 
 					exit(-1); 
 				}		
 				close(out);
 			}
+			
+			if (command->in) {
+				/* Open the input file */
+				int in = open(command->in, O_RDONLY);
+				if (-1 == in) {
+					perror("opening the input file failed\n");
+					exit(-1);
+				}
+
+				/* Redirect in to stdin */
+				if (-1 == dup2(in, STDIN_FILENO)) {
+					perror("cannot redirect to stdin");
+					exit(-1);
+				}
+				close(in);
+
+			}
+			
 			if(execvp(command->seq[0][0], command->seq[0]) == -1) {
 				perror("shell error on execvp \n");
 				exit(-1);
 			}
+
 		} else {
 			/* Father code */
 			child = 1;
